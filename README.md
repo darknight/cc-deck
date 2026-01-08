@@ -29,6 +29,7 @@ After installation, you can use the following commands with the `ccdeck:` namesp
 | `/ccdeck:pr` | Create a GitHub PR (commit, push, and create PR with `gh` CLI) |
 | `/ccdeck:plan` | Add a plan markdown file under `./docs` folder |
 | `/ccdeck:pickup <file>` | Pick up a task from a markdown file in `./docs` folder |
+| `/ccdeck:spec` | Interview user to refine a spec through in-depth Q&A |
 
 ## Usage Examples
 
@@ -64,10 +65,25 @@ Saves your proposal to a `PLAN-*.md` file in the `./docs` folder.
 ```
 Reads the specified task file and applies it to the current project.
 
+### Refine a Spec
+```
+/ccdeck:spec @docs/SPEC-feature.md
+```
+Interviews you in-depth about your spec using AskUserQuestion tool:
+- Technical implementation details
+- UI & UX considerations
+- Edge cases, tradeoffs, and risks
+
+Continue until the spec is complete, then writes the refined spec back to the file.
+
 ## Requirements
 
 - [Claude Code CLI](https://github.com/anthropics/claude-code)
 - [GitHub CLI (`gh`)](https://cli.github.com/) - for PR creation
+
+## Credits
+
+- The `/ccdeck:spec` command is inspired by [@trq212](https://x.com/trq212)'s [tweet](https://x.com/trq212/status/2005315275026260309) on spec-based development workflow with Claude Code.
 
 ## License
 
