@@ -4,18 +4,26 @@ A developer's command deck for Claude Code - streamlined workflows for git commi
 
 ## Installation
 
-### Manual Installation
+### Option 1: Marketplace (in Claude Code)
 
-Clone this repository and install as a Claude Code plugin:
+```
+/plugin marketplace add darknight/cc-deck
+/plugin install deck@cc-deck
+```
+
+### Option 2: CLI (in Terminal)
+
+```bash
+claude plugin marketplace add darknight/cc-deck
+claude plugin install deck@cc-deck
+```
+
+### Option 3: Manual Installation
+
+Clone and install locally:
 
 ```bash
 git clone https://github.com/darknight/cc-deck.git
-claude plugin add /path/to/cc-deck
-```
-
-Or install directly from a local directory:
-
-```bash
 claude plugin add /path/to/cc-deck
 ```
 
