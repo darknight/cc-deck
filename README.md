@@ -9,7 +9,7 @@ A developer's command deck for Claude Code - streamlined workflows for git commi
 Clone this repository and install as a Claude Code plugin:
 
 ```bash
-git clone https://github.com/anthropics/cc-deck.git
+git clone https://github.com/darknight/cc-deck.git
 claude plugin add /path/to/cc-deck
 ```
 
@@ -21,21 +21,21 @@ claude plugin add /path/to/cc-deck
 
 ## Commands
 
-After installation, you can use the following commands with the `ccdeck:` namespace:
+After installation, you can use the following commands with the `deck:` namespace:
 
 | Command | Description |
 |---------|-------------|
-| `/ccdeck:ci` | Commit staged changes to git (runs lint, stages changes, commits) |
-| `/ccdeck:pr` | Create a GitHub PR (commit, push, and create PR with `gh` CLI) |
-| `/ccdeck:plan` | Add a plan markdown file under `./docs` folder |
-| `/ccdeck:pickup <file>` | Pick up a task from a markdown file in `./docs` folder |
-| `/ccdeck:spec` | Interview user to refine a spec through in-depth Q&A |
+| `/deck:ci` | Commit staged changes to git (runs lint, stages changes, commits) |
+| `/deck:pr` | Create a GitHub PR (commit, push, and create PR with `gh` CLI) |
+| `/deck:plan` | Add a plan markdown file under `./docs` folder |
+| `/deck:pickup <file>` | Pick up a task from a markdown file in `./docs` folder |
+| `/deck:spec` | Interview user to refine a spec through in-depth Q&A |
 
 ## Usage Examples
 
 ### Commit changes
 ```
-/ccdeck:ci
+/deck:ci
 ```
 This will:
 1. Run lint checks
@@ -44,7 +44,7 @@ This will:
 
 ### Create a Pull Request
 ```
-/ccdeck:pr
+/deck:pr
 ```
 This will:
 1. Check if on `main` branch (creates new branch if needed)
@@ -55,19 +55,19 @@ This will:
 
 ### Save a Plan
 ```
-/ccdeck:plan
+/deck:plan
 ```
 Saves your proposal to a `PLAN-*.md` file in the `./docs` folder.
 
 ### Pick up a task
 ```
-/ccdeck:pickup docs/PLAN-feature.md
+/deck:pickup docs/PLAN-feature.md
 ```
 Reads the specified task file and applies it to the current project.
 
 ### Refine a Spec
 ```
-/ccdeck:spec @docs/SPEC-feature.md
+/deck:spec @docs/SPEC-feature.md
 ```
 Interviews you in-depth about your spec using AskUserQuestion tool:
 - Technical implementation details
@@ -83,8 +83,8 @@ Continue until the spec is complete, then writes the refined spec back to the fi
 
 ## Credits
 
-- The `/ccdeck:spec` command is inspired by [@trq212](https://x.com/trq212)'s [tweet](https://x.com/trq212/status/2005315275026260309) on spec-based development workflow with Claude Code.
+- The `/deck:spec` command is inspired by [@trq212](https://x.com/trq212)'s [tweet](https://x.com/trq212/status/2005315275026260309) on spec-based development workflow with Claude Code.
 
 ## License
 
-MIT
+Apache-2.0
