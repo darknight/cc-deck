@@ -1,6 +1,8 @@
 ---
+name: spec
+description: Interview user to refine a spec through in-depth Q&A
+argument-hint: [@spec-file]
 allowed-tools: Read, AskUserQuestion, Write
-description: interview user to refine a spec through in-depth Q&A
 ---
 
 Read the spec file provided by the user (e.g., @docs/SPEC-*.md or any markdown file they reference).

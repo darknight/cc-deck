@@ -1,6 +1,7 @@
 ---
+name: ci
+description: Commit staged changes to git
 allowed-tools: Bash(git add:*), Bash(git status:*), Bash(git commit:*)
-description: commit staged changes to git
 ---
 
 If there are untracked files, ask user if they want to add them to the commit.

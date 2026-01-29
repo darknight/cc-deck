@@ -6,7 +6,7 @@ A collection of Claude Code plugins by darknight.
 
 | Plugin | Description |
 |--------|-------------|
-| [deck](plugins/deck/) | A developer's command deck for Claude Code - streamlined workflows for git commits, PRs, and task management |
+| [deck](plugins/deck/) | A developer's skill deck for Claude Code - streamlined workflows for git commits, PRs, and task management |
 
 ## Installation
 

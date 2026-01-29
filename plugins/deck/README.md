@@ -1,6 +1,6 @@
 # cc-deck
 
-A developer's command deck for Claude Code - streamlined workflows for git commits, PRs, and task management.
+A developer's skill deck for Claude Code - streamlined workflows for git commits, PRs, and task management.
 
 ## Installation
 
@@ -27,16 +27,16 @@ git clone https://github.com/darknight/cc-deck.git
 claude plugin add /path/to/cc-deck
 ```
 
-## Commands
+## Skills
 
-After installation, you can use the following commands with the `deck:` namespace:
+After installation, you can use the following skills with the `deck:` namespace:
 
-| Command | Description |
-|---------|-------------|
+| Skill | Description |
+|-------|-------------|
 | `/deck:ci` | Commit staged changes to git (runs lint, stages changes, commits) |
 | `/deck:pr` | Create a GitHub PR (commit, push, and create PR with `gh` CLI) |
-| `/deck:plan` | Add a plan markdown file under `./docs` folder |
-| `/deck:pickup <file>` | Pick up a task from a markdown file in `./docs` folder |
+| `/deck:plan` | Add a plan markdown file under `./plans` folder |
+| `/deck:pickup <file>` | Pick up a task from a markdown file in `./plans` folder |
 | `/deck:spec` | Interview user to refine a spec through in-depth Q&A |
 
 ## Usage Examples
@@ -65,11 +65,11 @@ This will:
 ```
 /deck:plan
 ```
-Saves your proposal to a `PLAN-*.md` file in the `./docs` folder.
+Saves your proposal to a `PLAN-*.md` file in the `./plans` folder.
 
 ### Pick up a task
 ```
-/deck:pickup docs/PLAN-feature.md
+/deck:pickup plans/PLAN-feature.md
 ```
 Reads the specified task file and applies it to the current project.
 
@@ -91,7 +91,7 @@ Continue until the spec is complete, then writes the refined spec back to the fi
 
 ## Credits
 
-- The `/deck:spec` command is inspired by [@trq212](https://x.com/trq212)'s [tweet](https://x.com/trq212/status/2005315275026260309) on spec-based development workflow with Claude Code.
+- The `/deck:spec` skill is inspired by [@trq212](https://x.com/trq212)'s [tweet](https://x.com/trq212/status/2005315275026260309) on spec-based development workflow with Claude Code.
 
 ## License
 

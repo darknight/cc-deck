@@ -1,6 +1,7 @@
 ---
-allowed-tools: Bash(git add:*), Bash(git status:*), Bash(git commit:*), Bash(git push:*)
-description: create github PR
+name: pr
+description: Create GitHub PR
+allowed-tools: Bash(git add:*), Bash(git status:*), Bash(git commit:*), Bash(git push:*), Bash(gh:*)
 ---
 
 Current changes are good enough, now you need to commit & create github PR.
@@ -19,4 +20,4 @@ Last, you use `gh` cli to raise a PR on github with title following `Conventiona
 
 Be aware that the base branch should be `main` by default.
 
-In the end, show me the pr link
+In the end, show me the pr link.
