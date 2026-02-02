@@ -5,6 +5,7 @@ allowed-tools: Bash(git add:*), Bash(git status:*), Bash(git commit:*)
 ---
 
 If there are untracked files, ask user if they want to add them to the commit.
+You should provide options to add all, add none, or specify individual files to add.
 
 You need to run lint checking to make sure the lint check pass. If necessary, format the changed code before committing the changes.
 
