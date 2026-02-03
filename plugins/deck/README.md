@@ -35,9 +35,7 @@ After installation, you can use the following skills with the `deck:` namespace:
 |-------|-------------|
 | `/deck:ci` | Commit staged changes to git (runs lint, stages changes, commits) |
 | `/deck:pr` | Create a GitHub PR (commit, push, and create PR with `gh` CLI) |
-| `/deck:plan` | Add a plan markdown file under `./plans` folder |
-| `/deck:pickup <file>` | Pick up a task from a markdown file in `./plans` folder |
-| `/deck:spec` | Interview user to refine a spec through in-depth Q&A |
+| `/deck:spec` | Interview to refine ideas into specs, generate task lists, and execute with progress tracking |
 
 ## Usage Examples
 
@@ -61,28 +59,39 @@ This will:
 4. Push to remote
 5. Create PR using `gh` CLI with Conventional Commits format
 
-### Save a Plan
-```
-/deck:plan
-```
-Saves your proposal to a `PLAN-*.md` file in the `./plans` folder.
+### Spec Workflow
 
-### Pick up a task
+#### Start from an idea
 ```
-/deck:pickup plans/PLAN-feature.md
+/deck:spec "implement user authentication"
 ```
-Reads the specified task file and applies it to the current project.
+Interviews you in-depth, then generates:
+- `SPEC-user-auth.md` - detailed requirements spec
+- `TASK-user-auth.md` - task list with progress tracking
 
-### Refine a Spec
+#### Start from existing file
 ```
-/deck:spec @docs/SPEC-feature.md
+/deck:spec @docs/idea.md
 ```
-Interviews you in-depth about your spec using AskUserQuestion tool:
-- Technical implementation details
-- UI & UX considerations
-- Edge cases, tradeoffs, and risks
+Uses the file content as starting point for the interview.
 
-Continue until the spec is complete, then writes the refined spec back to the file.
+#### Execute tasks with progress tracking
+```
+/deck:spec apply @TASK-user-auth.md
+```
+Picks up the next pending task, executes it, and automatically updates progress.
+
+#### List all specs and tasks
+```
+/deck:spec list
+```
+Shows all SPEC and TASK files with their progress status.
+
+#### Custom output directory
+```
+/deck:spec "my idea" --dir ./docs/specs
+```
+Saves generated files to the specified directory (default: `./plans`).
 
 ## Requirements
 
