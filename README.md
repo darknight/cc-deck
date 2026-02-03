@@ -7,6 +7,7 @@ A collection of Claude Code plugins by darknight.
 | Plugin | Description |
 |--------|-------------|
 | [deck](plugins/deck/) | A developer's skill deck for Claude Code - streamlined workflows for git commits, PRs, and task management |
+| [freshrss](plugins/freshrss/) | FreshRSS reading assistant - fetch, analyze and manage RSS subscription articles |
 
 ## Installation
 
@@ -25,9 +26,11 @@ claude plugin marketplace add darknight/cc-deck
 ```bash
 # In Claude Code
 /plugin install deck@cc-deck
+/plugin install freshrss@cc-deck
 
 # Or in Terminal
 claude plugin install deck@cc-deck
+claude plugin install freshrss@cc-deck
 ```
 
 ## License
