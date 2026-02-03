@@ -1,7 +1,7 @@
 ---
 name: spec
 description: Interview to refine ideas into specs, generate task lists, and execute with progress tracking
-argument-hint: ["idea" | @file | apply @TASK-*.md | list | --dir path]
+argument-hint: '["idea" | @file | apply @TASK-*.md | list | --dir path]'
 allowed-tools: Read, Write, AskUserQuestion, Glob, Bash(mkdir:*), Bash(date:*)
 ---
 
