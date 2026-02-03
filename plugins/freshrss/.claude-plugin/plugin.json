@@ -1,0 +1,8 @@
+{
+  "name": "freshrss",
+  "description": "FreshRSS reading assistant - fetch, analyze and manage RSS subscription articles",
+  "version": "1.0.0",
+  "author": {
+    "name": "darknight"
+  }
+}

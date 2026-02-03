@@ -11,6 +11,12 @@
       "description": "A developer's command deck for Claude Code - streamlined workflows for git commits, PRs, and task management",
       "source": "./plugins/deck",
       "category": "productivity"
+    },
+    {
+      "name": "freshrss",
+      "description": "FreshRSS reading assistant - fetch, analyze and manage RSS subscription articles",
+      "source": "./plugins/freshrss",
+      "category": "productivity"
     }
   ]
 }
