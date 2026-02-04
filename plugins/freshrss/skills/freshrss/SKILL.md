@@ -49,6 +49,20 @@ Options:
 - `-n NUM`: Number of articles (default: 20)
 - `-f FEED_ID`: Filter by specific feed
 
+### Generate Digest (Batch Fetch Full Content)
+```bash
+cd $SKILL_DIR && uv run python run.py unread --digest -n 30
+```
+Options:
+- `--digest`: Enable digest mode - fetch full content for all articles
+- `-n NUM`: Number of articles (default: 20)
+- `-f FEED_ID`: Filter by specific feed
+- `--output, -o PATH`: Output directory (default: ~/Documents/freshrss-digest/)
+- `--dynamic, -d`: Use browser rendering for JS-heavy pages
+- `--timeout, -t`: Timeout per article in seconds (default: 30)
+
+This command fetches full content from original URLs for all unread articles. Use this when you want Claude to summarize articles and generate an HTML digest file.
+
 ### Get Single Article
 ```bash
 cd $SKILL_DIR && uv run python run.py article "<article_id>"
@@ -86,6 +100,42 @@ cd $SKILL_DIR && uv run python run.py setup --clear
    - If FreshRSS summary is enough, read it directly
    - If full content needed, use `fetch <url>` to get original article
 4. **Mark as read**: `read <id>` - Mark finished articles as read
+
+## Digest Workflow
+
+For batch summarization and HTML digest generation:
+
+1. **Fetch all unread with full content**:
+   ```bash
+   cd $SKILL_DIR && uv run python run.py unread --digest -n 30
+   ```
+
+2. **Claude processing**:
+   - Summarize each article in Chinese
+   - Adjust summary length based on article length:
+     - Short articles (<500 chars): 1-2 sentences
+     - Medium articles (500-1500 chars): 1 paragraph
+     - Long articles (>1500 chars): 3-5 key points
+   - Generate responsive HTML file with:
+     - Title (linked to original article)
+     - Feed source and publish date
+     - Content summary in Chinese
+   - Save to the output directory specified in the response
+
+3. **Ask user** if they want to mark the summarized articles as read
+
+4. **Mark as read** (if confirmed):
+   ```bash
+   cd $SKILL_DIR && uv run python run.py read "<id1>" "<id2>" ...
+   ```
+
+### HTML Template Guidelines
+
+The generated HTML should be:
+- Mobile-responsive (viewport meta, max-width container)
+- Support dark mode (prefers-color-scheme)
+- Clean, readable typography
+- Article cards with: title link, feed source, date, Chinese summary
 
 ## Output Format
 

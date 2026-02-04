@@ -13,6 +13,7 @@ Usage:
 import argparse
 import asyncio
 import json
+import os
 import sys
 from datetime import datetime
 from getpass import getpass
@@ -123,10 +124,110 @@ async def _cmd_unread(args: argparse.Namespace) -> None:
         output_json({"count": len(result), "articles": result})
 
 
+async def _cmd_unread_digest(args: argparse.Namespace) -> None:
+    """Get unread articles with full content for digest generation."""
+    creds = get_credentials()
+    if not creds:
+        output_error("Credentials not configured. Run: python run.py setup", "NO_CREDENTIALS")
+
+    # Expand output directory
+    output_dir = os.path.expanduser(args.output)
+
+    async with FreshRSSClient(creds.api_url, creds.username, creds.password) as client:
+        articles = await client.get_unread_articles(limit=args.num, feed_id=args.feed)
+
+        if not articles:
+            output_json({
+                "count": 0,
+                "digest_mode": True,
+                "message": "No unread articles found",
+                "articles": []
+            })
+            return
+
+        result = []
+        stats = {"total": len(articles), "success": 0, "failed": 0, "dynamic_used": 0}
+
+        for a in articles:
+            article_data = {
+                "id": a.id,
+                "title": a.title,
+                "link": a.link,
+                "published": a.published_at.isoformat(),
+                "feed": a.origin.title if a.origin else "",
+                "feed_id": a.origin.stream_id if a.origin else "",
+            }
+
+            # Fetch full content from original URL
+            if a.link:
+                try:
+                    fetched = await fetch_full_article(
+                        a.link,
+                        force_dynamic=args.dynamic,
+                        timeout=args.timeout,
+                    )
+
+                    if fetched.get("error"):
+                        # Fallback to RSS content
+                        rss_content = a.summary.content if a.summary else ""
+                        article_data["full_content"] = rss_content
+                        article_data["content_source"] = "rss"
+                        article_data["fetch_error"] = fetched.get("message", "Unknown error")
+                        stats["failed"] += 1
+                    else:
+                        article_data["full_content"] = fetched.get("content", "")
+                        article_data["content_source"] = "fetched"
+                        article_data["fetch_method"] = fetched.get("method", "static")
+                        article_data["author"] = fetched.get("author")
+                        article_data["fetch_date"] = fetched.get("date")
+                        stats["success"] += 1
+                        if fetched.get("method") == "dynamic":
+                            stats["dynamic_used"] += 1
+                except Exception as e:
+                    # Fallback to RSS content on any exception
+                    rss_content = a.summary.content if a.summary else ""
+                    article_data["full_content"] = rss_content
+                    article_data["content_source"] = "rss"
+                    article_data["fetch_error"] = str(e)
+                    stats["failed"] += 1
+            else:
+                # No link available, use RSS content
+                article_data["full_content"] = a.summary.content if a.summary else ""
+                article_data["content_source"] = "rss"
+                article_data["fetch_error"] = "No article link available"
+                stats["failed"] += 1
+
+            # Calculate word count (character count for Chinese)
+            content = article_data.get("full_content", "")
+            article_data["word_count"] = len(content)
+
+            result.append(article_data)
+
+        # Generate suggested filename
+        today = datetime.now().strftime("%Y-%m-%d")
+
+        output_json({
+            "count": len(result),
+            "digest_mode": True,
+            "output_dir": output_dir,
+            "fetch_stats": stats,
+            "articles": result,
+            "instructions": {
+                "task": "summarize",
+                "language": "zh-CN",
+                "output_format": "html",
+                "suggested_filename": f"digest-{today}.html"
+            }
+        })
+
+
 def cmd_unread(args: argparse.Namespace) -> None:
     """Get unread articles wrapper."""
     try:
-        asyncio.run(_cmd_unread(args))
+        if args.digest:
+            asyncio.run(_cmd_unread_digest(args))
+        else:
+            asyncio.run(_cmd_unread(args))
     except AuthenticationError as e:
         output_error(str(e), "AUTH_FAILED")
     except APIError as e:
@@ -284,6 +385,15 @@ def main() -> None:
     p_unread = subparsers.add_parser("unread", help="Get unread articles")
     p_unread.add_argument("-n", "--num", type=int, default=20, help="Number of articles (default: 20)")
     p_unread.add_argument("-f", "--feed", type=str, help="Filter by feed ID")
+    p_unread.add_argument("--digest", action="store_true",
+        help="Fetch full content for digest generation")
+    p_unread.add_argument("--output", "-o", type=str,
+        default="~/Documents/freshrss-digest/",
+        help="Output directory for digest (default: ~/Documents/freshrss-digest/)")
+    p_unread.add_argument("--dynamic", "-d", action="store_true",
+        help="Use browser rendering for JS-heavy pages")
+    p_unread.add_argument("--timeout", "-t", type=int, default=30,
+        help="Timeout per article fetch in seconds (default: 30)")
     p_unread.set_defaults(func=cmd_unread)
 
     # article
