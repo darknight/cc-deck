@@ -5,6 +5,15 @@ argument-hint: '["idea" | @file | apply @TASK-*.md | list | --dir path]'
 allowed-tools: Read, Write, AskUserQuestion, Glob, Bash(mkdir:*), Bash(date:*)
 ---
 
+## Quick Reference
+```
+/spec "idea"               # Start interview from idea description
+/spec @file.md             # Start interview from file content
+/spec apply @TASK-*.md     # Execute next task in task list
+/spec list                 # List all SPEC/TASK files with progress
+/spec "idea" --dir ./docs  # Specify custom output directory
+```
+
 # Spec Skill - Requirements Refinement & Task Management
 
 Route to the appropriate mode based on `$ARGUMENTS`:

@@ -4,6 +4,19 @@ description: FreshRSS reading assistant - fetch, analyze and manage RSS subscrip
 allowed-tools: Bash(uv run:*), Bash(cd:*)
 ---
 
+## Quick Reference
+```
+/freshrss subs              # List subscriptions with unread counts
+/freshrss unread            # Get unread articles
+/freshrss unread -n 30      # Get 30 unread articles
+/freshrss unread --digest   # Generate HTML digest (batch summarize)
+/freshrss article <id>      # Get single article content
+/freshrss fetch <url>       # Fetch full content from original URL
+/freshrss fetch <url> -d    # Use browser rendering (JS-heavy pages)
+/freshrss read <id> ...     # Mark articles as read
+/freshrss setup             # Configure API credentials
+```
+
 # FreshRSS Reading Assistant
 
 You are a FreshRSS reading assistant that helps users manage and read their RSS subscriptions.

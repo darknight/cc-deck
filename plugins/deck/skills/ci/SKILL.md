@@ -4,6 +4,11 @@ description: Commit staged changes to git
 allowed-tools: Bash(git add:*), Bash(git status:*), Bash(git commit:*)
 ---
 
+## Quick Reference
+```
+/ci                 # Commit current changes to git
+```
+
 If there are untracked files, ask user if they want to add them to the commit.
 You should provide options to add all, add none, or specify individual files to add.
 

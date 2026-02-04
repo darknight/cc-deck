@@ -4,6 +4,11 @@ description: Create GitHub PR
 allowed-tools: Bash(git add:*), Bash(git status:*), Bash(git commit:*), Bash(git push:*), Bash(gh:*)
 ---
 
+## Quick Reference
+```
+/pr                 # Create GitHub PR (auto lint, commit, push)
+```
+
 Current changes are good enough, now you need to commit & create github PR.
 
 First, you need to check current branch, if you find we are on the `main` branch, please checkout a new one.
