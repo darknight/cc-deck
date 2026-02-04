@@ -1,7 +1,7 @@
 ---
 name: spec
-description: Interview to refine ideas into specs, generate task lists, and execute with progress tracking
-argument-hint: '["idea" | @file | apply @TASK-*.md | run [@TASK-*.md] [--dry-run] | list | --dir path]'
+description: Interview to refine ideas into specs, then execute tasks with progress tracking
+argument-hint: '["idea" | @file | run @SPEC-*.md | import @plan-file.md]'
 allowed-tools: Read, Write, AskUserQuestion, Glob, Bash(mkdir:*), Bash(date:*), Task
 ---
 
@@ -9,40 +9,30 @@ allowed-tools: Read, Write, AskUserQuestion, Glob, Bash(mkdir:*), Bash(date:*), 
 ```
 /spec "idea"               # Start interview from idea description
 /spec @file.md             # Start interview from file content
-/spec apply @TASK-*.md     # Execute next task in task list
-/spec run                  # Execute all tasks automatically (batch)
-/spec run @TASK-*.md       # Execute all tasks in specific file
-/spec run --dry-run        # Preview execution plan without running
-/spec list                 # List all SPEC/TASK files with progress
-/spec "idea" --dir ./docs  # Specify custom output directory
+/spec run @SPEC-*.md       # Execute tasks in specified SPEC file
+/spec import @plan.md      # Import Claude Code plan file to SPEC format
 ```
 
-# Spec Skill - Requirements Refinement & Task Management
+# Spec Skill - Requirements Refinement & Task Execution
 
 Route to the appropriate mode based on `$ARGUMENTS`:
 
 ## Mode Routing
 
-### 1. Apply Mode
-**Trigger**: `$ARGUMENTS` starts with `apply`
-**Example**: `apply @TASK-user-auth.md`, `apply ./plans/TASK-xxx.md`
-
-### 2. List Mode
-**Trigger**: `$ARGUMENTS` equals `list`
-
-### 3. File Interview Mode
-**Trigger**: `$ARGUMENTS` starts with `@` or points to an existing file
-
-### 4. Idea Interview Mode
-**Trigger**: All other cases (plain text description)
-
-### 5. Run Mode (Batch Execution)
+### 1. Run Mode
 **Trigger**: `$ARGUMENTS` starts with `run`
-**Example**: `run`, `run @TASK-user-auth.md`, `run --dry-run`
+**Example**: `run @SPEC-user-auth.md`
+**Required**: Must specify a SPEC file. If not provided, prompt user to specify one.
 
-### Parameter Parsing
-- `--dir <path>`: Custom output directory, defaults to `./plans`
-- Example: `/spec "idea" --dir ./docs/specs`
+### 2. Import Mode
+**Trigger**: `$ARGUMENTS` starts with `import`
+**Example**: `import @plan.md`
+**Required**: Must specify a plan file to import.
+
+### 3. Interview Mode (Default)
+**Trigger**: All other cases
+- `@file` - Start from file content
+- Plain text - Start from idea description
 
 ---
 
@@ -54,32 +44,35 @@ Route to the appropriate mode based on `$ARGUMENTS`:
 
 ### Interview Process
 
-Conduct in-depth interviews using AskUserQuestion, focusing on one topic per round:
+Conduct adaptive interviews using AskUserQuestion. No fixed rounds - Claude determines the flow based on context.
 
-**Round 1 - Core Requirements**
-- What problem does this feature solve?
-- Who are the target users?
-- What are the success criteria?
+**Core Principles**:
+- Ask 1-3 focused questions per round
+- Dig deep rather than staying surface-level
+- Challenge assumptions and explore alternatives
+- Continue until user signals completion ("enough", "that's all", "looks good")
 
-**Round 2 - Technical Details**
-- Any technical constraints or preferences?
-- What existing systems need integration?
-- Performance and security requirements?
+**Cumulative Summary**:
+Before each question round, provide a brief summary of information collected so far:
 
-**Round 3 - User Experience**
-- How will users interact with this feature?
-- Any UI/UX requirements?
-- Error handling and edge cases?
+```
+## Collected Information
 
-**Round 4 - Risks & Tradeoffs**
-- What are the potential risks?
-- What tradeoffs are acceptable?
-- What must be avoided?
+**Problem**: {what we know about the problem}
+**Users**: {target users identified}
+**Technical**: {technical constraints/preferences}
+**UX**: {user experience requirements}
 
-**Subsequent Rounds**
-- Dig deeper based on previous answers
-- Challenge assumptions, explore alternatives
-- No fixed number of rounds - continue until user says "enough" or "that's all"
+Based on the above, I'd like to clarify...
+```
+
+**Topic Areas to Explore** (adapt order and depth based on context):
+- Problem definition and success criteria
+- Target users and their needs
+- Technical constraints and integration points
+- User experience and interaction patterns
+- Risks, tradeoffs, and scope boundaries
+- Dependencies and open questions
 
 ### Slug Generation
 
@@ -88,17 +81,19 @@ Generate a short English slug based on the requirements:
 - 2-4 words
 - Examples: `user-auth`, `dark-mode`, `api-rate-limit`
 
-### Output Files
+### Output File
 
-Ensure directory exists, then generate two files:
+Ensure directory exists, then generate a single unified file:
 
-**SPEC-{slug}.md** - Requirements specification:
+**SPEC-{slug}.md** - Combined specification and task tracking:
 ```markdown
 ---
 title: {Title}
 slug: {slug}
 created: {YYYY-MM-DD}
+last-updated: {YYYY-MM-DD HH:MM}
 status: draft
+progress: 0/{N}
 ---
 
 # {Title}
@@ -134,275 +129,297 @@ status: draft
 ## Dependencies
 
 ## Open Questions
-```
 
-**TASK-{slug}.md** - Task checklist:
-```markdown
----
-title: {Title}
-slug: {slug}
-spec: SPEC-{slug}.md
-created: {YYYY-MM-DD}
-last-updated: {YYYY-MM-DD HH:MM}
-progress: 0/{N}
-status: pending
 ---
 
-# {Title} - Task List
-
-> Related spec: [SPEC-{slug}.md](./SPEC-{slug}.md)
+# Task List
 
 ## Progress Overview
 
-[░░░░░░░░░░] 0% (0/{N} tasks)
+| Status | Count |
+|--------|-------|
+| Total | {N} |
+| Completed | 0 |
+| Remaining | {N} |
 
-## Task List
+## Tasks
 
 ### Phase 1: {Phase Name}
 
-- [ ] **Task 1**: {Description}
-  - Acceptance: {Completion criteria}
-
-- [ ] **Task 2**: {Description}
-  - Acceptance: {Completion criteria}
+| # | Task | Status | Notes |
+|---|------|--------|-------|
+| 1 | {Task description} | ⬜ | Acceptance: {criteria} |
+| 2 | {Task description} | ⬜ | Acceptance: {criteria} |
 
 ### Phase 2: {Phase Name}
 
-...
+| # | Task | Status | Notes |
+|---|------|--------|-------|
+| 3 | {Task description} | ⬜ | Acceptance: {criteria} |
+| 4 | {Task description} | ⬜ | Acceptance: {criteria} |
+
+---
 
 ## Execution Log
 
 {Execution notes will be appended here}
 ```
 
+**Status Legend**:
+- ⬜ Pending
+- 🔄 In Progress
+- ✅ Completed
+
 ---
 
-## Mode 2: Apply Mode
+## Mode 2: Import Mode
+
+Import a Claude Code plan file and convert it to SPEC format for subagent execution.
+
+### Purpose
+
+Claude Code's built-in plan mode executes all tasks in the current session, which can overflow the context window. Import mode converts plan files to SPEC format, enabling execution via isolated subagents.
 
 ### Execution Flow
 
-1. **Read task file**
-   - Parse YAML front matter
-   - Identify all tasks and their status
+1. **Read plan file**
+   - Parse the specified file (e.g., `import @plan.md`)
+   - If no file specified, prompt user
 
-2. **Select task**
-   - Find the first incomplete `[ ]` task
-   - If all complete, inform the user
+2. **Extract content**
+   - **Title**: From first `#` heading or filename
+   - **Background**: Any text before the task list
+   - **Tasks**: Parse checkbox items (`- [ ]` or `- [x]`)
 
-3. **Execute task**
-   - Perform the actual work as described
-   - Mark as `[x]` when done
+3. **Generate slug**
+   - Derive from title or ask user
+   - Format: lowercase, hyphen-separated, 2-4 words
 
-4. **Update file**
-   - Update checkbox status
-   - Update `progress` count
-   - Update `last-updated` timestamp
-   - Add completion note
+4. **Convert to SPEC format**
+   - Create SPEC-{slug}.md with three sections:
+     - Requirements (from background text)
+     - Task List (converted to table format)
+     - Execution Log (empty)
 
-### Update Format
+5. **Save and confirm**
+   - Write to `./plans/SPEC-{slug}.md` (or custom --dir)
+   - Show summary and next steps
 
+### Plan File Formats Supported
+
+**Format 1: Markdown checkboxes**
 ```markdown
-- [x] **Task 1**: Description
-  - Acceptance: Completion criteria
-  > Completed: 2024-01-15 14:30
+# Feature Implementation
+
+Some background context...
+
+## Tasks
+- [ ] Task one description
+- [ ] Task two description
+- [x] Already completed task
 ```
 
-### Progress Bar Update
+**Format 2: Numbered list**
+```markdown
+# Plan Title
+
+1. First task
+2. Second task
+3. Third task
+```
+
+**Format 3: Mixed content**
+```markdown
+# Plan
+
+## Background
+Context and requirements...
+
+## Implementation Steps
+- [ ] Step 1: Do something
+  - Detail about step 1
+- [ ] Step 2: Do another thing
+```
+
+### Output Example
+
+After `import @my-plan.md`:
 
 ```
-[████░░░░░░] 40% (2/5 tasks)
+## Import Complete
+
+**Source**: my-plan.md
+**Output**: ./plans/SPEC-my-feature.md
+
+**Extracted**:
+- Title: My Feature
+- Tasks: 5 (0 completed, 5 pending)
+
+**Next steps**:
+- Review: Read the generated SPEC file
+- Execute: /spec run @SPEC-my-feature.md
 ```
+
+### Task Conversion Rules
+
+| Plan Format | SPEC Format |
+|-------------|-------------|
+| `- [ ] Task` | ⬜ Pending |
+| `- [x] Task` | ✅ Completed |
+| `1. Task` | ⬜ Pending |
+| Nested items | Merged into Notes column |
 
 ---
 
-## Mode 3: List Mode
+## Mode 3: Run Mode
 
-### Execution Flow
-
-1. Use Glob to search for `SPEC-*.md` and `TASK-*.md` in the directory
-2. Read front matter from each TASK file
-3. Display as table:
-
-```markdown
-| File | Title | Progress | Status | Last Updated |
-|------|-------|----------|--------|--------------|
-| TASK-user-auth.md | User Auth | 3/5 (60%) | in-progress | 2024-01-15 |
-| TASK-dark-mode.md | Dark Mode | 5/5 (100%) | completed | 2024-01-14 |
-```
-
----
-
-## Mode 4: Run Mode (Batch Execution)
-
-Execute all tasks in a TASK file automatically with isolated subagent per task.
-
-### Parameters
-
-| Parameter | Description | Default |
-|-----------|-------------|---------|
-| `@TASK-*.md` | Specific task file | Auto-discover in current directory |
-| `--dry-run` | Preview plan without executing | false |
-
-### Run vs Apply Comparison
-
-| Feature | apply | run |
-|---------|-------|-----|
-| Scope | Single task | All tasks |
-| Context | Accumulated | Fresh per task (subagent) |
-| Error handling | Manual | Auto-stop + report |
-| Use case | Review each step | Trusted batch processing |
+Execute tasks sequentially using subagents. Main context handles scheduling and progress tracking only.
 
 ### Execution Flow
 
 #### Phase 1: Parse and Plan
 
-1. **Read TASK file**
-   - If no file specified, search for `TASK-*.md` in current directory
-   - If multiple found, ask user to select
+1. **Locate SPEC file**
+   - File must be specified in the command (e.g., `run @SPEC-user-auth.md`)
+   - If no file specified: Prompt user with message:
+     ```
+     Please specify a SPEC file to execute.
+     Usage: /spec run @SPEC-{slug}.md
+     ```
 
 2. **Parse tasks**
-   - Extract all tasks with their status
-   - Identify dependencies (if `Depends:` field exists)
-   - Build execution order (topological sort)
+   - Extract all tasks from the Task List section
+   - Identify status of each task (⬜/🔄/✅)
+   - Count pending tasks
 
 3. **Display execution plan**
    ```
    ## Execution Plan
 
-   **File**: TASK-user-auth.md
+   **File**: SPEC-user-auth.md
    **Total Tasks**: 5
    **Already Completed**: 2
    **To Execute**: 3
 
-   | Order | Task | Dependencies |
-   |-------|------|--------------|
-   | 1 | Implement login API | (task-2 ✅) |
-   | 2 | Add auth middleware | (task-3) |
-   | 3 | Write unit tests | (task-4) |
+   | Order | Task | Current Status |
+   |-------|------|----------------|
+   | 1 | Implement login API | ⬜ |
+   | 2 | Add auth middleware | ⬜ |
+   | 3 | Write unit tests | ⬜ |
 
    Proceed with execution? [Y/n]
    ```
 
-4. **If `--dry-run`**: Stop here after showing plan
-
-#### Phase 2: Execute Loop
+#### Phase 2: Sequential Execution
 
 For each pending task in order:
 
-1. **Pre-check**: Verify dependencies completed
-2. **Display**: Show current task being executed
-3. **Execute via subagent**:
+1. **Update status to in-progress**
+   - Change task status to 🔄
+   - Write file immediately
+
+2. **Execute via subagent**
    - Use Task tool to create isolated subagent
-   - Pass full task description and acceptance criteria
-   - Include relevant SPEC context
-4. **Validate**: Check subagent result
-5. **Update file immediately**:
-   - Mark task as `[x]`
-   - Add completion timestamp
-   - Update `progress` in frontmatter
-   - Update `last-updated` timestamp
-6. **Report progress**: Show updated progress bar
+   - Pass task description, acceptance criteria, and relevant spec context
+   - Subagent prompt:
+     ```
+     Execute the following task:
 
-### Progress Display
+     **Task**: {task_description}
+     **Acceptance Criteria**: {acceptance_criteria}
 
-```
-## Batch Execution Progress
+     **Context from Spec**:
+     {relevant_spec_sections}
 
-[████░░░░░░] 40% (2/5 tasks)
+     Complete this task and report the result.
+     ```
 
-| # | Task | Status |
-|---|------|--------|
-| 1 | Setup database schema | ✅ Done |
-| 2 | Create user model | ✅ Done |
-| 3 | Implement login API | 🔄 Running... |
-| 4 | Add auth middleware | ⏳ Pending |
-| 5 | Write unit tests | ⏳ Pending |
+3. **Handle result**
+   - **On success**:
+     - Update status to ✅
+     - Add completion note with timestamp
+     - Update progress count in frontmatter
+     - Update `last-updated` timestamp
+     - Proceed to next task
+   - **On failure**:
+     - Keep status as 🔄
+     - Stop execution immediately
+     - Display error report
 
-**Current Task**: Implement login API
-```
+4. **Report progress after each task**
+   ```
+   ## Progress Update
+
+   Completed: Task 3 - Implement login API
+   Progress: 3/5 tasks (60%)
+
+   Moving to next task...
+   ```
 
 ### Error Handling
 
-On task failure:
-
-1. **Stop immediately** - Do not continue to next task
-2. **Save state** - Update TASK file with current progress
-3. **Display error report**:
+On task failure, stop immediately and report:
 
 ```
-## Execution Halted ❌
+## Execution Halted
 
 **Failed Task**: Task 3 - Implement login API
-**Error Type**: Execution failure
-**Details**:
-[Error details from subagent]
+**Status**: 🔄 (marked as in-progress)
+
+**Error Details**:
+{Error message from subagent}
 
 **Current Progress**: 2/5 (40%)
-**Completed**: Task 1, Task 2
-**Pending**: Task 3, Task 4, Task 5
 
-**Recovery Options**:
-1. Fix the issue manually
-2. Run `/spec run` again to continue from failed task
-3. Use `/spec apply @TASK-xxx.md` to execute single task with more control
+**Recovery**:
+- Fix the issue manually
+- Run `/spec run @SPEC-xxx.md` again to retry from the failed task
 ```
 
 ### Completion Report
 
 ```
-## Execution Complete ✅
+## Execution Complete
 
-[██████████] 100% (5/5 tasks)
+**File**: SPEC-user-auth.md
+**Tasks Completed**: 5/5 (100%)
 
 ### Summary
-- **Total Tasks**: 5
-- **Completed**: 5
-- **Failed**: 0
 
-### Execution Log
-| Task | Notes |
-|------|-------|
-| Setup database schema | Created 3 migration files |
-| Create user model | - |
-| Implement login API | Added JWT support |
-| Add auth middleware | - |
-| Write unit tests | 12 tests, all passing |
+| Task | Result |
+|------|--------|
+| Setup database schema | ✅ Created 3 migration files |
+| Create user model | ✅ |
+| Implement login API | ✅ Added JWT support |
+| Add auth middleware | ✅ |
+| Write unit tests | ✅ 12 tests passing |
 
-**TASK file updated**: TASK-user-auth.md
+SPEC file has been updated with completion status.
 ```
 
-### Subagent Execution Details
+### Subagent Benefits
 
-When executing each task via Task tool:
-
-1. **Create subagent prompt**:
-   ```
-   Execute the following task:
-
-   **Task**: {task_description}
-   **Acceptance Criteria**: {acceptance_criteria}
-   **Related Spec**: {spec_content_summary}
-
-   Complete this task and report the result.
-   ```
-
-2. **Subagent isolation benefits**:
-   - Fresh context for each task
-   - No accumulated state pollution
-   - Clear task boundaries
-   - Easier debugging on failure
+- **Fresh context**: Each task starts with clean state
+- **Clear boundaries**: No accumulated pollution between tasks
+- **Easier debugging**: Failures are isolated to specific tasks
+- **Progress tracking**: Main context maintains overall view
 
 ---
 
 ## Important Guidelines
 
 ### Interview Principles
+- Adapt questions based on context and previous answers
+- Provide cumulative summary before each question round
 - Ask deep, insightful questions - avoid surface-level ones
-- 1-3 related questions per round
-- Adapt subsequent questions based on answers
-- No preset number of rounds
+- No fixed number of rounds - continue until user is satisfied
 
 ### File Handling
 - If file exists, ask user: Overwrite / Use new slug / Cancel
 - Auto-create directory if it doesn't exist
-- SPEC and TASK slugs must match
+- Single SPEC file contains both requirements and tasks
+
+### Task Table Format
+- Use table format for all tasks
+- Status icons: ⬜ Pending | 🔄 In Progress | ✅ Completed
+- Include acceptance criteria in Notes column
