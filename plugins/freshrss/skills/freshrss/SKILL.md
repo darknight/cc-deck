@@ -1,6 +1,7 @@
 ---
 name: freshrss
 description: FreshRSS reading assistant - fetch, analyze and manage RSS subscription articles
+argument-hint: '[subs | unread [--digest] | article <id> | fetch <url> | read <id>...]'
 allowed-tools: Bash(uv run:*), Bash(cd:*)
 ---
 
