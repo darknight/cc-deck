@@ -9,15 +9,20 @@ allowed-tools: Bash(git add:*), Bash(git status:*), Bash(git commit:*)
 /ci                 # Commit current changes to git
 ```
 
-If there are untracked files, ask user if they want to add them to the commit.
-You should provide options to add all, add none, or specify individual files to add.
+## Workflow
 
-You need to run lint checking to make sure the lint check pass. If necessary, format the changed code before committing the changes.
+Follow these steps in order:
 
-Then you add all changed files as staged changes.
+1. **Check status**: Run `git status` to identify staged, unstaged, and untracked files.
 
-You should commit changes only, do NOT push to remote github.
+2. **Handle untracked files**: If there are untracked files, ask user if they want to add them to the commit. Provide options to add all, add none, or specify individual files to add.
 
-The commit message should be short, succinct.
+3. **Run lint/format**: Run lint checking on the staged files. If necessary, format the changed code to make the lint check pass.
 
-The commit author should be current github user, do not co-author with anthropic or claude code.
+4. **Re-stage all changes**: After formatting, run `git add` on all previously staged files again so that formatting changes are included. This is critical — formatting may modify files that were already staged, and those modifications must be re-staged before committing.
+
+5. **Commit**: Create the commit. Do NOT push to remote github.
+
+## Rules
+
+- The commit message must be in concise English.
