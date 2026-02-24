@@ -1,28 +1,45 @@
 ---
 name: pr
-description: Create GitHub PR
-allowed-tools: Bash(git add:*), Bash(git status:*), Bash(git diff:*), Bash(git commit:*), Bash(git push:*), Bash(git checkout:*), Bash(gh:*), Bash(npm run:*), Bash(npx:*), Bash(pnpm:*), Bash(bun run:*), Bash(cargo fmt:*), Bash(cargo clippy:*)
+description: Create GitHub PR from current branch commits
+allowed-tools: Bash(git status:*), Bash(git log:*), Bash(git push:*), Bash(git branch:*), Bash(gh:*)
 ---
 
 ## Quick Reference
 ```
-/pr                 # Create GitHub PR (auto lint, commit, push)
+/pr                 # Create GitHub PR from current branch
 ```
 
 ## Workflow
 
-Follow these steps strictly in order:
+Follow these steps strictly in order. Do NOT skip or reorder steps.
 
-1. **Check branch**: If on `main`, checkout a new branch.
+### Step 1: Check branch
 
-2. **Check status**: Run `git status`. Ignore untracked files — focus on tracked changes only.
+Run `git branch --show-current`. If on `main`, tell the user they cannot create a PR from the main branch and stop.
 
-3. **Format and re-stage**: Run lint/format tools on the changed files. After formatting, you MUST immediately run `git add` on every file that was formatted. Never skip this — formatting modifies files that were already staged, and those modifications will be lost from the commit if not re-staged.
+Run `git log main..HEAD --oneline` to check for commits ahead of main. If there are no commits AND the working directory is clean, tell the user there is nothing to create a PR for and stop.
 
-4. **Verify staging**: Run `git diff` (without --cached) to check for unstaged changes. If any output appears, run `git add` on them. Only continue when `git diff` produces no output.
+### Step 2: Check working directory
 
-5. **Commit**: Create the commit. One-line message, no co-author info.
+Run `git status` to check if the working directory is clean.
 
-6. **Create PR**: Generate a succinct, self-explanatory PR description. Use `gh` cli to create the PR with title following `Conventional Commits` pattern. Base branch is `main`.
+- **Clean**: Proceed to Step 3.
+- **Dirty** (any staged, unstaged, or untracked changes): Ask the user:
+  1. Commit changes first — suggest using `/ci`, then stop and let the user run it.
+  2. Ignore local changes and continue creating the PR based on existing commits only.
 
-7. **Show PR link**: Display the PR URL.
+### Step 3: Push and create PR
+
+1. Run `git push -u origin HEAD` to push the branch.
+2. Run `git log main..HEAD` to analyze all commits on this branch. Generate a succinct, self-explanatory PR description from them.
+3. Run `gh pr create` with a title following `Conventional Commits` pattern. Base branch is `main`.
+
+### Step 4: Show PR link
+
+Display the PR URL to the user.
+
+## Rules
+
+- This skill only creates PRs. It does NOT format, stage, or commit code.
+- The PR title must follow Conventional Commits pattern (e.g., `feat:`, `fix:`, `refactor:`).
+- If a PR already exists for this branch, display the existing PR URL instead of creating a new one.
