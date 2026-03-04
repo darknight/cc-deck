@@ -88,6 +88,11 @@ cd plugins/freshrss/skills/freshrss && uv run python run.py <command>
 3. Write instructions in markdown body
 4. For Python skills, use `uv` for dependency management
 
+### Version Management
+
+- When modifying plugin content (skills, code, or config), bump the version in the corresponding `.claude-plugin/plugin.json`
+- Follow semver: patch for fixes, minor for new features/enhancements, major for breaking changes
+
 ### Plugin Installation (for users)
 
 ```bash
