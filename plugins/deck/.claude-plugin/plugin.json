@@ -1,7 +1,7 @@
 {
   "name": "deck",
   "description": "A developer's skill deck for Claude Code - streamlined workflows for git commits, PRs, and task management",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "author": {
     "name": "darknight"
   }

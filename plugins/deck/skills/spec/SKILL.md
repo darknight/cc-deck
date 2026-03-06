@@ -2,7 +2,7 @@
 name: spec
 description: Interview to refine ideas into specs, then execute tasks with progress tracking
 argument-hint: '["idea" | @file | run @SPEC-*.md | import @plan-file.md]'
-allowed-tools: Read, Write, AskUserQuestion, Glob, Bash(mkdir:*), Bash(date:*), Task
+allowed-tools: Read, Write, AskUserQuestion, Glob, Bash(mkdir:*), Bash(date:*), Task, ExitPlanMode
 ---
 
 ## Quick Reference
@@ -80,6 +80,10 @@ Generate a short English slug based on the requirements:
 - Lowercase letters, hyphen-separated
 - 2-4 words
 - Examples: `user-auth`, `dark-mode`, `api-rate-limit`
+
+### Plan Mode Handling
+
+If plan mode is currently active, call ExitPlanMode before generating the SPEC file. The spec interview process itself serves as the planning phase — the SPEC document is the deliverable, not a plan file.
 
 ### Output File
 
