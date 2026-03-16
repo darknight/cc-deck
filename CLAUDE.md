@@ -72,6 +72,13 @@ Spec skill modes:
 - When modifying plugin content (skills, code, or config), bump the version in the corresponding `.claude-plugin/plugin.json`
 - Follow semver: patch for fixes, minor for new features/enhancements, major for breaking changes
 
+### Adding or Removing a Plugin
+
+When adding or removing a plugin, update **all** registry and documentation files:
+- `.claude-plugin/marketplace.json` — the marketplace plugin registry (controls what users see during installation)
+- `README.md` — plugin table and installation instructions
+- `CLAUDE.md` — architecture diagram and plugin details
+
 ### Plugin Installation (for users)
 
 ```bash
