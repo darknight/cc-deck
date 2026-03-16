@@ -9,27 +9,19 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Repository Overview
 
-cc-deck is a collection of Claude Code plugins providing developer workflow automation and RSS management capabilities.
+cc-deck is a collection of Claude Code plugins providing developer workflow automation capabilities.
 
 ## Architecture
 
 ```
 cc-deck/
 ├── plugins/
-│   ├── deck/                    # Git workflow plugin
-│   │   ├── .claude-plugin/      # Plugin metadata
-│   │   └── skills/              # SKILL.md files define Claude behaviors
-│   │       ├── ci/              # Git commit skill
-│   │       ├── pr/              # GitHub PR creation skill
-│   │       └── spec/            # Spec-based development workflow
-│   └── freshrss/                # RSS reading assistant plugin
+│   └── deck/                    # Git workflow plugin
 │       ├── .claude-plugin/      # Plugin metadata
-│       └── skills/freshrss/     # Python CLI for FreshRSS API
-│           ├── run.py           # CLI entry point
-│           └── lib/             # Core modules
-│               ├── client.py    # FreshRSS Google Reader API client
-│               ├── credentials.py # System keychain integration
-│               └── fetcher.py   # Article content fetcher (static/dynamic)
+│       └── skills/              # SKILL.md files define Claude behaviors
+│           ├── ci/              # Git commit skill
+│           ├── pr/              # GitHub PR creation skill
+│           └── spec/            # Spec-based development workflow
 ```
 
 ### Plugin Structure
@@ -62,22 +54,9 @@ Markdown-only skills that orchestrate git/GitHub workflows:
 - `/deck:spec` - Spec-based development with interview → spec → task list → execution
 
 Spec skill modes:
-- Interview mode: Generate SPEC-{slug}.md and TASK-{slug}.md
-- Apply mode: Execute single task from TASK file
+- Interview mode: Generate SPEC-{slug}.md
+- Import mode: Convert Claude Code plan files to SPEC format
 - Run mode: Batch execute all tasks via subagents
-- List mode: Show all spec/task files with progress
-
-### freshrss Plugin
-
-Python-based skill using `uv` for dependency management:
-- Commands: `setup`, `unread`, `article`, `fetch`, `read`, `subs`
-- Digest mode: Batch fetch full content for Claude summarization
-- Credentials stored in system keychain (macOS: `security`, Linux: `secret-tool`)
-
-Run commands from skill directory:
-```bash
-cd plugins/freshrss/skills/freshrss && uv run python run.py <command>
-```
 
 ## Development
 
@@ -86,7 +65,7 @@ cd plugins/freshrss/skills/freshrss && uv run python run.py <command>
 1. Create `plugins/<plugin>/skills/<skill>/SKILL.md`
 2. Define YAML frontmatter with name, description, allowed-tools
 3. Write instructions in markdown body
-4. For Python skills, use `uv` for dependency management
+4. Skills can include `references/` directories for templates and supporting files
 
 ### Version Management
 
@@ -98,11 +77,8 @@ cd plugins/freshrss/skills/freshrss && uv run python run.py <command>
 ```bash
 claude plugin marketplace add darknight/cc-deck
 claude plugin install deck@cc-deck
-claude plugin install freshrss@cc-deck
 ```
 
 ## Dependencies
 
 - GitHub CLI (`gh`) - Required for PR creation
-- Python 3.10+ with `uv` - For freshrss plugin
-- Playwright with Chromium - For dynamic content fetching (optional)

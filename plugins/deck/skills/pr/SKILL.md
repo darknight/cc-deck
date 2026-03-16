@@ -1,7 +1,7 @@
 ---
 name: pr
-description: Create GitHub PR from current branch commits
-allowed-tools: Bash(git status:*), Bash(git log:*), Bash(git push:*), Bash(git branch:*), Bash(gh:*)
+description: "Create a GitHub pull request — pushes the current branch and opens a PR with auto-generated title and description. Use for any PR creation, branch submission, or code review request."
+allowed-tools: Bash(git status:*), Bash(git log:*), Bash(git push:*), Bash(git branch:*), Bash(git diff:*), Bash(gh:*)
 ---
 
 ## Quick Reference
@@ -10,8 +10,6 @@ allowed-tools: Bash(git status:*), Bash(git log:*), Bash(git push:*), Bash(git b
 ```
 
 ## Workflow
-
-Follow these steps strictly in order. Do NOT skip or reorder steps.
 
 ### Step 1: Check branch
 
@@ -34,12 +32,20 @@ Run `git status` to check if the working directory is clean.
 2. Run `git log main..HEAD` to analyze all commits on this branch. Generate a succinct, self-explanatory PR description from them.
 3. Run `gh pr create` with a title following `Conventional Commits` pattern. Base branch is `main`.
 
-### Step 4: Show PR link
+### Step 4: Request review agents
 
-Display the PR URL to the user.
+After the PR is created, automatically request code review from available review agents:
+
+1. Run `gh pr edit --add-reviewer @copilot` to request Copilot code review.
+2. If the command succeeds, note that Copilot review has been requested.
+3. If it fails (e.g., Copilot not available for the repo), skip silently and continue.
+
+### Step 5: Show result
+
+Display the PR URL to the user, along with the review request status.
 
 ## Rules
 
-- This skill only creates PRs. It does NOT format, stage, or commit code.
+- This skill only creates PRs. It does not format, stage, or commit code.
 - The PR title must follow Conventional Commits pattern (e.g., `feat:`, `fix:`, `refactor:`).
 - If a PR already exists for this branch, display the existing PR URL instead of creating a new one.
